@@ -92,9 +92,28 @@
         .time { font-size: 0.7rem; color: #333; margin-top: 4px; }
         .other-message .time { color: #ccc; }
 
-        /* --- REACTION MENU STYLES --- */
+        /* --- REACTION DISPLAY --- */
+        .reaction-display {
+            position: absolute;
+            bottom: -10px; 
+            right: 5px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            background: #f0f0f0; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            line-height: 1;
+            font-size: 1.2rem;
+            cursor: pointer; 
+        }
+        .other-message .reaction-display {
+            right: auto;
+            left: 5px;
+        }
+
+
+        /* --- REACTION MENU (SMOOTH ANIMATION & FIXED POSITION) --- */
         #reactionMenu {
-            /* Fixes it to the viewport, preventing it from scrolling away */
+            /* Fixed to viewport, won't scroll off screen */
             position: fixed; 
             display: none; 
             background: #fff;
@@ -105,14 +124,15 @@
             align-items: center;
             gap: 8px;
             
-            /* Animation State (Start) */
+            /* Animation Start State (Small, Transparent) */
             transform: scale(0.8) translateY(10px);
             opacity: 0;
+            /* Smooth transition with bounce effect */
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease-out; 
         }
         
         #reactionMenu.show {
-            /* Animation State (End - "Comes in slowly") */
+            /* Animation End State (Full size, Opaque) */
             display: flex;
             transform: scale(1) translateY(0);
             opacity: 1;
@@ -129,7 +149,7 @@
         }
         .emoji-btn:hover { transform: scale(1.2); }
         
-        /* Custom Emoji Picker Style */
+        /* Custom Emoji Picker Style (The Plus Button) */
         .custom-reaction-group {
             display: flex;
             gap: 0;
@@ -158,25 +178,7 @@
             color: #777;
         }
         
-        .reaction-display {
-            position: absolute;
-            bottom: -10px; 
-            right: 5px;
-            padding: 2px 6px;
-            border-radius: 12px;
-            background: #f0f0f0; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-            line-height: 1;
-            font-size: 1.2rem;
-            cursor: pointer; /* Allows clicking to see who reacted (future feature) */
-        }
-        .other-message .reaction-display {
-            right: auto;
-            left: 5px;
-        }
-        
         /* --- OTHER STYLES (Gallery, Notes, Floating Button) --- */
-        /* ... (Keep the rest of the existing styles for other sections) ... */
         .slider-container {
             width: 90%;
             overflow-x: auto;
@@ -299,7 +301,7 @@
 
     <div id="reactionMenu">
         <button class="emoji-btn" onclick="addReaction('👍')">👍</button>
-        <button class="emoji-btn" onclick="addReaction('❤️')">💙</button>
+        <button class="emoji-btn" onclick="addReaction('❤️')">❤️</button>
         <button class="emoji-btn" onclick="addReaction('😂')">😂</button>
         <button class="emoji-btn" onclick="addReaction('😮')">😮</button>
         <button class="emoji-btn" onclick="addReaction('😢')">😢</button>
@@ -343,8 +345,7 @@
         const chatBox = document.getElementById("chatBox");
 
 
-        // --- CHAT MESSAGE & MEDIA SENDING (Standard Logic) ---
-
+        // --- CHAT MESSAGE SENDING ---
         function sendMessage() {
             const msg = document.getElementById("chatInput").value;
             if (!msg.trim()) return;
@@ -361,14 +362,11 @@
             document.getElementById("chatInput").value = "";
         }
         
-        // (Function sendMedia and other support functions are assumed to be present)
-
-        
-        // --- REACTION FEATURE LOGIC ---
+        // --- REACTION FEATURE LOGIC VARIABLES ---
         let messageReactions = {}; 
         let currentMessageKey = null;
 
-        // Listener for Realtime Chat Updates
+        // --- CHAT MESSAGE LOADING (Including Reaction Setup) ---
         db.ref("chat").on("value", snapshot => {
             chatBox.innerHTML = "";
             messageReactions = {}; 
@@ -399,13 +397,13 @@
                 div.innerHTML += `<div class="reaction-display">${reactionDisplay}</div>`;
                 div.setAttribute('data-key', messageKey); 
                 
-                // Event Listeners for Reaction Menu (Long-press/Click/Right-click)
+                // --- Event Listeners for Reaction Menu (Long-press/Click/Right-click) ---
                 let pressTimer;
                 div.addEventListener('mousedown', (e) => {
-                    if (e.button === 0) { 
+                    if (e.button === 0) { // Left click
                         pressTimer = setTimeout(() => {
                             showReactionMenu(messageKey, e);
-                        }, 300);
+                        }, 300); // 300ms for "long press"
                     }
                 });
                 div.addEventListener('mouseup', () => {
@@ -413,6 +411,7 @@
                 });
                 
                 div.addEventListener('click', (e) => {
+                     // Prevents menu from showing if a long press was triggered
                      if (pressTimer) {
                         clearTimeout(pressTimer);
                         pressTimer = null; 
@@ -431,7 +430,9 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         });
 
-        // Shows the reaction menu (The positioning fix is here)
+        // --- REACTION MENU CONTROL FUNCTIONS (The Core Feature) ---
+
+        // Shows the reaction menu with fixed positioning and smooth animation
         function showReactionMenu(messageKey, event) {
             currentMessageKey = messageKey;
             const menu = document.getElementById('reactionMenu');
@@ -440,7 +441,7 @@
             
             const rect = messageElement.getBoundingClientRect();
             
-            // Fixed sizing (must match CSS)
+            // Fixed sizing (must match CSS for centering)
             const menuHeight = 60; 
             const menuWidth = 380; 
             
@@ -448,7 +449,7 @@
             let topPosition = rect.top - menuHeight - 10; 
             let leftPosition = rect.left + (rect.width / 2) - (menuWidth / 2);
             
-            // Clamp (prevent going off screen)
+            // Clamp (prevent menu from going off screen left/right)
             if (leftPosition < 10) leftPosition = 10;
             if (leftPosition + menuWidth > window.innerWidth - 10) {
                  leftPosition = window.innerWidth - menuWidth - 10;
@@ -457,11 +458,11 @@
             menu.style.top = `${topPosition}px`;
             menu.style.left = `${leftPosition}px`;
             
-            // Start the smooth animation
+            // Show menu and trigger smooth animation
             menu.style.display = 'flex'; 
             menu.classList.add('show');
             
-            // Update input value and focus
+            // Set input value and focus
             input.value = messageReactions[messageKey] || '';
             input.focus();
             
@@ -491,6 +492,7 @@
         function addReaction(emoji) {
             if (!currentMessageKey) return;
             const currentReaction = messageReactions[currentMessageKey];
+            // Toggle logic: If the same emoji is clicked, set newReaction to null (remove)
             let newReaction = (currentReaction === emoji) ? null : emoji;
             
             db.ref(`chat/${currentMessageKey}`).update({ reaction: newReaction });
@@ -518,7 +520,7 @@
                 return;
             }
             
-            // Simple validation for a single emoji
+            // Validation for a single emoji
             if (emoji.length > 2) {
                 alert("Please use only a single emoji for the reaction.");
                 return;
@@ -528,21 +530,30 @@
             closeReactionMenu();
         }
         
-        // Explicitly removes the reaction
+        // Explicitly removes the reaction (used by clearing input)
         function removeReaction() {
             if (!currentMessageKey) return;
             db.ref(`chat/${currentMessageKey}`).update({ reaction: null });
             closeReactionMenu();
         }
 
+        // --- OTHER UTILITY FUNCTIONS ---
 
-        // --- OTHER UTILITY FUNCTIONS (For completeness) ---
         function logout() {
           localStorage.removeItem("chatUser");
           window.location.href = "login.html";
         }
-        // (Other functions like loadNotes, saveNote, deleteNote, showBlueCollection, sendMedia should be included here)
+        
+        // --- Dummy/Placeholder functions for missing sections (to avoid errors) ---
+        function loadNotes() {}
+        function saveNote() {}
+        function deleteNote(index) {}
+        function showBlueCollection() {}
+        function sendMedia(fileInput) {} 
 
+        // Initial calls for things that need to run immediately
+        loadNotes();
+        // --- END JAVASCRIPT ---
     </script>
 </body>
 </html>
