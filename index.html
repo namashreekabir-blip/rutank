@@ -25,7 +25,7 @@
     }
     @keyframes backgroundShift {
       0% {background: linear-gradient(135deg, #fceabb, #f8b500);}
-      50% {background: linear-gradient(135deg, #a1c4fd, #c2e9fb);}
+      50% {background: linear-gradient(135deg, #a1c4fd, #c2e9fb);}<br>
       100% {background: linear-gradient(135deg, #f5c7b8, #c9d6ff);}
     }
     
@@ -193,8 +193,6 @@
         padding: 10px;
         color: #000;
     }
-
-    /* Your message — appears on left (you had it as flex-start) */
     .my-message {
       background: rgba(255, 255, 255, 0.7);
       color: #000;
@@ -206,7 +204,6 @@
       max-width: 70%;
     }
 
-    /* Other’s message — appears on right (you had it as flex-end) */
     .other-message {
       background: rgba(0, 0, 0, 0.2);
       color: #fff;
@@ -232,7 +229,7 @@
       margin-top: 4px;
     }
     .other-message .time {
-        color: #ccc; /* Lighter time text for dark message bubble */
+        color: #ccc; 
     }
 
     .section-title {
@@ -272,7 +269,7 @@
       cursor: pointer;
     }
     
-    /* --- NEW FLOATING BUTTON STYLES --- */
+    /* --- FLOATING BUTTON STYLES (ADDED) --- */
 
     #float-upload-container {
         position: fixed;
@@ -472,7 +469,7 @@
     }
     loadNotes();
 
-    // Firebase Chat & Upload Logic
+    // Firebase Chat & Upload Logic (UPDATED)
     const firebaseConfig = {
       apiKey: "AIzaSyDnVN3MFbB8_4hYHDbHY_OFdlG6NdZoFN4",
       authDomain: "maybemaybenot-eaa41.firebaseapp.com",
@@ -487,7 +484,7 @@
     const db = firebase.database();
     const chatBox = document.getElementById("chatBox");
 
-    // --- Floating Button Logic ---
+    // --- Floating Button Logic (ADDED) ---
     const mainBtn = document.getElementById('main-upload-btn');
     const optionsMenu = document.getElementById('float-media-options');
     const imageUpload = document.getElementById('image-upload');
@@ -512,7 +509,6 @@
       if (!msg.trim()) return;
 
       const nickname = localStorage.getItem("chatUser");
-      // If user not logged in, redirect to login page
       if (!nickname) {
         window.location.href = "login.html";
         return;
@@ -530,7 +526,7 @@
       document.getElementById("chatInput").value = "";
     }
     
-    // Function to handle media upload using Firebase Storage
+    // Function to handle media upload using Firebase Storage (ADDED/UPDATED)
     function sendMedia(fileInput) {
         const file = fileInput.files[0];
         if (!file) return;
@@ -541,14 +537,13 @@
 
         const nickname = localStorage.getItem("chatUser") || "You";
         
-        // Determine media type
         let mediaType = '';
         if (file.type.startsWith('image/')) mediaType = 'image';
         else if (file.type.startsWith('audio/')) mediaType = 'audio';
         else if (file.type.startsWith('video/')) mediaType = 'video';
         else {
             alert("Unsupported file type selected.");
-            fileInput.value = ''; // Reset input
+            fileInput.value = ''; 
             return;
         }
 
@@ -556,7 +551,7 @@
         const storageRef = firebase.storage().ref('chatMedia/' + Date.now() + '_' + file.name);
         const uploadTask = storageRef.put(file);
         
-        // Push a temporary message to show status
+        // Push a temporary message
         db.ref("chat").push({
             text: `Uploading ${mediaType.toUpperCase()}...`,
             sender: nickname,
@@ -567,9 +562,7 @@
 
 
         uploadTask.on('state_changed', 
-            (snapshot) => {
-                // You could update progress here if you wanted
-            }, 
+            (snapshot) => {}, 
             (error) => {
                 console.error("Upload failed:", error);
                 alert("Media upload failed!");
@@ -584,9 +577,8 @@
                         date: new Date().toLocaleDateString(),
                         sender: nickname
                     };
-                    // The placeholder message will be quickly replaced by this new media message
                     firebase.database().ref("chat").push(messageObj);
-                    fileInput.value = ''; // Reset the input field
+                    fileInput.value = ''; 
                 });
             }
         );
@@ -598,27 +590,28 @@
     }
 
 
-    // Load Messages Realtime with sender side + date
+    // Load Messages Realtime (UPDATED to handle media)
     db.ref("chat").on("value", snapshot => {
       chatBox.innerHTML = "";
       snapshot.forEach(snap => {
         const m = snap.val();
         const div = document.createElement("div");
 
-        // Identify the current user
         const currentUser = localStorage.getItem("chatUser") || "You";
         const sender = m.sender || "Unknown";
 
-        // Assign class based on sender
         if (sender === currentUser) {
           div.className = "message my-message";
-          div.innerHTML = `<p>${m.text}</p>`;
         } else {
           div.className = "message other-message";
-          div.innerHTML = `<p>${m.text}</p>`;
         }
         
-        // ADD MEDIA ELEMENTS
+        // Add text content (only if there is any)
+        if (m.text) {
+             div.innerHTML += `<p>${m.text}</p>`;
+        }
+        
+        // ADD MEDIA ELEMENTS (ADDED)
         if (m.media) {
             if (m.type === 'image') {
                 div.innerHTML += `<img src="${m.media}" style="max-width:200px; border-radius:10px; display:block; margin-top:5px;">`;
@@ -635,7 +628,6 @@
         } else {
              div.innerHTML += `<div class="time">${sender} • ${m.date} | ${m.time}</div>`;
         }
-
 
         chatBox.appendChild(div);
       });
