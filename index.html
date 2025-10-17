@@ -96,7 +96,7 @@
     }
 
     .block {
-        background: rgba(255,255,255,0.6); /* semi-transparent white */
+        background: rgba(255,255,255,0.6); 
         backdrop-filter: blur(12px);
         border-radius: 20px;
         padding: 20px;
@@ -106,7 +106,7 @@
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         display: flex;
         flex-direction: column;
-        color: #000; /* black text inside blocks */
+        color: #000; 
     }
 
     /* Notes */
@@ -264,6 +264,13 @@
         z-index: 1001;
         align-items: center;
         gap: 8px;
+        /* WhatsApp-like bounce effect */
+        animation: menuPop 0.2s ease-out;
+    }
+    
+    @keyframes menuPop {
+        0% { transform: scale(0.5); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
     }
     
     /* Default Emoji Buttons */
@@ -280,12 +287,13 @@
         transform: scale(1.2);
     }
     
-    /* Input/Custom Section */
+    /* Custom Emoji Input & Remove Button */
     .custom-reaction-group {
         display: flex;
         gap: 5px;
         padding-left: 10px;
         border-left: 1px solid #eee;
+        align-items: center;
     }
     #customReactionInput {
         width: 40px; 
@@ -475,11 +483,12 @@
     <input type="file" id="video-upload" accept="video/*" style="display: none;">
 
 <div id="reactionMenu">
-    <button class="emoji-btn" onclick="addReaction('💙')">💙</button>
-    <button class="emoji-btn" onclick="addReaction('😂')">😂</button>
     <button class="emoji-btn" onclick="addReaction('👍')">👍</button>
+    <button class="emoji-btn" onclick="addReaction('❤️')">❤️</button>
+    <button class="emoji-btn" onclick="addReaction('😂')">😂</button>
+    <button class="emoji-btn" onclick="addReaction('😮')">😮</button>
     <button class="emoji-btn" onclick="addReaction('😢')">😢</button>
-      <button class="emoji-btn" onclick="addReaction('✨')">✨</button>
+    <button class="emoji-btn" onclick="addReaction('🙏')">🙏</button>
     
     <div class="custom-reaction-group">
         <input type="text" id="customReactionInput" placeholder="✨" maxlength="2" onkeypress="handleCustomReaction(event)">
@@ -775,7 +784,9 @@
         
         // 5. Add a timeout to close the menu if the user clicks anywhere else
         setTimeout(() => {
+            // Remove previous listener to prevent duplicates
             document.removeEventListener('click', closeReactionMenu); 
+            // Add listener to close menu on next click outside
             document.addEventListener('click', closeReactionMenu, { once: true });
         }, 100); 
         
@@ -789,7 +800,7 @@
         document.removeEventListener('click', closeReactionMenu);
     }
     
-    // Handles quick-select button clicks
+    // Handles quick-select button clicks and toggling
     function addReaction(emoji) {
         if (!currentMessageKey) return;
         
@@ -811,8 +822,10 @@
     
     // Handles custom reaction submission (when Enter is pressed in the input field)
     function handleCustomReaction(event) {
+        // Stop all other events if the key is Enter
         if (event.key === 'Enter') {
             submitCustomReaction();
+            event.preventDefault(); // Prevents form submission or other default behavior
             return false;
         }
     }
@@ -823,13 +836,13 @@
         
         let emoji = document.getElementById('customReactionInput').value.trim();
         
-        // If the user clears the box and presses enter, treat it as removal
+        // If the user clears the box and presses enter, remove the reaction
         if (emoji.length === 0) {
             removeReaction();
             return;
         }
         
-        // Optional: Keep it limited to one or two characters (one emoji)
+        // Limit to a single emoji (max 2 code points)
         if (emoji.length > 2) {
             alert("Please use only a single emoji for the reaction.");
             return;
@@ -843,7 +856,7 @@
         closeReactionMenu();
     }
     
-    // Removes the reaction entirely
+    // Removes the reaction entirely (used by the 'Remove' button)
     function removeReaction() {
         if (!currentMessageKey) return;
         
