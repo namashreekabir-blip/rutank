@@ -52,6 +52,15 @@
             flex-direction: column;
             color: #000; 
         }
+        button {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
 
         /* --- CHAT STYLES --- */
         .chat-box {
@@ -113,7 +122,6 @@
 
         /* --- REACTION MENU (SMOOTH ANIMATION & FIXED POSITION) --- */
         #reactionMenu {
-            /* Fixed to viewport, won't scroll off screen */
             position: fixed; 
             display: none; 
             background: #fff;
@@ -124,15 +132,14 @@
             align-items: center;
             gap: 8px;
             
-            /* Animation Start State (Small, Transparent) */
+            /* Animation Start State */
             transform: scale(0.8) translateY(10px);
             opacity: 0;
-            /* Smooth transition with bounce effect */
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease-out; 
         }
         
         #reactionMenu.show {
-            /* Animation End State (Full size, Opaque) */
+            /* Animation End State (Smooth Pop) */
             display: flex;
             transform: scale(1) translateY(0);
             opacity: 1;
@@ -149,7 +156,7 @@
         }
         .emoji-btn:hover { transform: scale(1.2); }
         
-        /* Custom Emoji Picker Style (The Plus Button) */
+        /* Custom Emoji Picker Style */
         .custom-reaction-group {
             display: flex;
             gap: 0;
@@ -214,39 +221,17 @@
             color: #000;
             background: rgba(255,255,255,0.8);
         }
-        button {
-            padding: 10px 20px;
-            border-radius: 20px;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
         #float-upload-container {
-            position: fixed;
-            bottom: 30px; 
-            right: 30px; 
-            z-index: 1000; 
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end; 
+            position: fixed; bottom: 30px; right: 30px; z-index: 1000; display: flex;
+            flex-direction: column; align-items: flex-end; 
         }
         #main-upload-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: #25D366; 
-            color: white;
-            font-size: 30px;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
+            width: 60px; height: 60px; border-radius: 50%; background-color: #25D366; 
+            color: white; font-size: 30px; font-weight: bold; border: none; cursor: pointer;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         }
         #main-upload-btn.active {
-            transform: rotate(45deg);
-            background-color: #ff4d4d; 
+            transform: rotate(45deg); background-color: #ff4d4d; 
         }
         .hidden-options { display: none !important; }
     </style>
@@ -385,8 +370,7 @@
                     div.className = "message other-message";
                 }
                 
-                // Content Rendering (Media and Text)
-                if (m.media) { /* ... render media ... */ }
+                // Content Rendering (simplified for brevity)
                 if (m.text) { div.innerHTML += `<p style="margin: 0; padding: 0;">${m.text}</p>`; }
                 
                 // Time & Sender
@@ -399,19 +383,22 @@
                 
                 // --- Event Listeners for Reaction Menu (Long-press/Click/Right-click) ---
                 let pressTimer;
+                // Start a timer on mouse down for a "long press"
                 div.addEventListener('mousedown', (e) => {
-                    if (e.button === 0) { // Left click
+                    if (e.button === 0) { 
                         pressTimer = setTimeout(() => {
                             showReactionMenu(messageKey, e);
-                        }, 300); // 300ms for "long press"
+                        }, 300);
                     }
                 });
+                // Clear timer on mouse up
                 div.addEventListener('mouseup', () => {
                     clearTimeout(pressTimer);
                 });
                 
+                // Regular click action
                 div.addEventListener('click', (e) => {
-                     // Prevents menu from showing if a long press was triggered
+                     // Only show menu if a long-press wasn't started or the target isn't already a clickable element
                      if (pressTimer) {
                         clearTimeout(pressTimer);
                         pressTimer = null; 
@@ -420,6 +407,7 @@
                      }
                 });
                 
+                // Right-click action
                 div.addEventListener('contextmenu', (e) => {
                     e.preventDefault(); 
                     showReactionMenu(messageKey, e);
@@ -441,7 +429,7 @@
             
             const rect = messageElement.getBoundingClientRect();
             
-            // Fixed sizing (must match CSS for centering)
+            // Fixed sizing (must match CSS for centering: 380px wide, 60px tall)
             const menuHeight = 60; 
             const menuWidth = 380; 
             
@@ -514,7 +502,7 @@
             
             let emoji = document.getElementById('customReactionInput').value.trim();
             
-            // Logic for removal if input is cleared
+            // Logic for removal if input is cleared (Acts as the 'Remove' button)
             if (emoji.length === 0) {
                 removeReaction();
                 return;
@@ -530,7 +518,7 @@
             closeReactionMenu();
         }
         
-        // Explicitly removes the reaction (used by clearing input)
+        // Explicitly removes the reaction
         function removeReaction() {
             if (!currentMessageKey) return;
             db.ref(`chat/${currentMessageKey}`).update({ reaction: null });
@@ -544,16 +532,14 @@
           window.location.href = "login.html";
         }
         
-        // --- Dummy/Placeholder functions for missing sections (to avoid errors) ---
+        // Dummy/Placeholder functions for other sections (to avoid errors if they are called)
         function loadNotes() {}
         function saveNote() {}
         function deleteNote(index) {}
         function showBlueCollection() {}
         function sendMedia(fileInput) {} 
 
-        // Initial calls for things that need to run immediately
         loadNotes();
-        // --- END JAVASCRIPT ---
     </script>
 </body>
 </html>
