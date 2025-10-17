@@ -255,7 +255,7 @@
 
     /* Reaction Menu */
     .reaction-menu {
-        position: fixed;
+        position: fixed; /* Will be set to absolute by JS for correct scrolling */
         background: #fff;
         border-radius: 25px;
         padding: 8px 15px;
@@ -708,17 +708,28 @@
     function showReactionMenu(messageKey, event) {
         currentMessageKey = messageKey;
         const menu = document.getElementById('reactionMenu');
+        const messageElement = event.currentTarget; // The message div that was clicked
         
-        // Position the menu near the event click or touch point
-        const x = event.pageX || (event.touches ? event.touches[0].pageX : 0);
-        const y = event.pageY || (event.touches ? event.touches[0].pageY : 0);
+        // 1. Get the position of the message element relative to the viewport
+        const rect = messageElement.getBoundingClientRect();
         
-        menu.style.top = `${y - 50}px`; // 50px above the click
-        menu.style.left = `${x - (menu.offsetWidth / 2)}px`;
+        // 2. Calculate the top and left position for the menu
+        // We want the menu to appear above the message, centered horizontally
+        const menuTop = rect.top + window.scrollY - 60; // 60px above the message top edge
+        const menuLeft = rect.left + window.scrollX + (rect.width / 2) - (menu.offsetWidth / 2);
+        
+        // 3. Set properties and show the menu
+        menu.style.position = 'absolute'; // Use absolute positioning for accurate placement on the page
+        menu.style.top = `${menuTop}px`;
+        menu.style.left = `${menuLeft}px`;
         menu.style.display = 'flex';
         
+        // 4. Ensure message is visible (smooth scroll up if needed)
+        // messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Removed for cleaner behavior
+
         // Close menu if user clicks outside
         setTimeout(() => {
+            document.removeEventListener('click', closeReactionMenu); 
             document.addEventListener('click', closeReactionMenu, { once: true });
         }, 100); 
         
