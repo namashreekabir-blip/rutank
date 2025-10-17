@@ -290,6 +290,56 @@
   padding: 8px 12px;
   max-width: 70%;
 }
+    .message {
+  position: relative;
+  margin: 10px;
+  padding: 8px 12px;
+  border-radius: 15px;
+  max-width: 70%;
+  cursor: pointer;
+}
+
+.right {
+  background: rgba(255, 255, 255, 0.2);
+  align-self: flex-end;
+}
+
+.left {
+  background: rgba(255, 255, 255, 0.1);
+  align-self: flex-start;
+}
+
+.reaction-panel {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 5px 8px;
+  gap: 8px;
+  display: flex;
+  transition: 0.3s;
+}
+
+.reaction-panel .reaction {
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: transform 0.2s;
+}
+
+.reaction-panel .reaction:hover {
+  transform: scale(1.2);
+}
+
+.user-reaction {
+  font-size: 1.2rem;
+  margin-top: 4px;
+  text-align: right;
+}
+
     
   </style>
 </head>
