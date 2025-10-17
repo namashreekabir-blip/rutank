@@ -25,7 +25,7 @@
     }
     @keyframes backgroundShift {
       0% {background: linear-gradient(135deg, #fceabb, #f8b500);}
-      50% {background: linear-gradient(135deg, #a1c4fd, #c2e9fb);}<br>
+      50% {background: linear-gradient(135deg, #a1c4fd, #c2e9fb);}
       100% {background: linear-gradient(135deg, #f5c7b8, #c9d6ff);}
     }
     
@@ -146,7 +146,7 @@
       border-radius: 10px;
       margin-bottom: 8px;
       color: #000;
-      position: relative; /* needed for delete-btn positioning */
+      position: relative; 
     }
     .note .date {
       font-size: 0.7rem;
@@ -269,7 +269,7 @@
       cursor: pointer;
     }
     
-    /* --- FLOATING BUTTON STYLES (ADDED) --- */
+    /* --- FLOATING BUTTON STYLES --- */
 
     #float-upload-container {
         position: fixed;
@@ -278,7 +278,7 @@
         z-index: 1000; 
         display: flex;
         flex-direction: column;
-        align-items: flex-end; /* Align buttons to the right */
+        align-items: flex-end; 
     }
 
     /* Styling for the main '+' button */
@@ -295,14 +295,14 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         transition: transform 0.3s ease-in-out;
         margin-top: 10px;
-        line-height: 60px; /* Center the plus symbol */
+        line-height: 60px; 
         padding: 0;
     }
 
     /* Rotate the '+' symbol when the menu is open */
     #main-upload-btn.active {
         transform: rotate(45deg);
-        background-color: #ff4d4d; /* Change color to red on active */
+        background-color: #ff4d4d; 
     }
 
     /* Styling for the menu of options */
@@ -407,7 +407,9 @@
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script> <script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script> 
+
+  <script>
     
     // Gallery
     const images = ['just.jpg','diya.jpg','3 face.jpg','tem1.jpg','tem 2.jpg','heena.jpg','soft toy.jpg','cheena.jpg'];
@@ -469,7 +471,7 @@
     }
     loadNotes();
 
-    // Firebase Chat & Upload Logic (UPDATED)
+    // Firebase Chat & Upload Logic
     const firebaseConfig = {
       apiKey: "AIzaSyDnVN3MFbB8_4hYHDbHY_OFdlG6NdZoFN4",
       authDomain: "maybemaybenot-eaa41.firebaseapp.com",
@@ -484,7 +486,7 @@
     const db = firebase.database();
     const chatBox = document.getElementById("chatBox");
 
-    // --- Floating Button Logic (ADDED) ---
+    // --- Floating Button Logic ---
     const mainBtn = document.getElementById('main-upload-btn');
     const optionsMenu = document.getElementById('float-media-options');
     const imageUpload = document.getElementById('image-upload');
@@ -526,7 +528,7 @@
       document.getElementById("chatInput").value = "";
     }
     
-    // Function to handle media upload using Firebase Storage (ADDED/UPDATED)
+    // Function to handle media upload using Firebase Storage
     function sendMedia(fileInput) {
         const file = fileInput.files[0];
         if (!file) return;
@@ -606,23 +608,23 @@
           div.className = "message other-message";
         }
         
-        // Add text content (only if there is any)
-        if (m.text) {
-             div.innerHTML += `<p>${m.text}</p>`;
-        }
-        
-        // ADD MEDIA ELEMENTS (ADDED)
+        // 1. ADD MEDIA ELEMENTS FIRST
         if (m.media) {
             if (m.type === 'image') {
-                div.innerHTML += `<img src="${m.media}" style="max-width:200px; border-radius:10px; display:block; margin-top:5px;">`;
+                div.innerHTML += `<img src="${m.media}" style="max-width:200px; border-radius:10px; display:block; margin-bottom: 5px;">`;
             } else if (m.type === 'video') {
-                div.innerHTML += `<video src="${m.media}" controls style="width:100%; max-width:200px; border-radius:10px; display:block; margin-top:5px;"></video>`;
+                div.innerHTML += `<video src="${m.media}" controls style="width:100%; max-width:200px; border-radius:10px; display:block; margin-bottom: 5px;"></video>`;
             } else if (m.type === 'audio') {
-                div.innerHTML += `<audio src="${m.media}" controls style="width:100%; max-width:200px; display:block; margin-top:5px;"></audio>`;
+                div.innerHTML += `<audio src="${m.media}" controls style="width:100%; max-width:200px; display:block; margin-bottom: 5px;"></audio>`;
             }
         }
         
-        // ADD TIME/DATE
+        // 2. Add text content below media (only if there is any)
+        if (m.text) {
+             div.innerHTML += `<p style="margin: 0; padding: 0;">${m.text}</p>`;
+        }
+        
+        // 3. ADD TIME/DATE
         if (sender === currentUser) {
              div.innerHTML += `<div class="time">${m.date} | ${m.time}</div>`;
         } else {
