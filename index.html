@@ -488,6 +488,69 @@ db.ref("chat").on("value", snapshot => {
 
 
   </script>
-<script src="chatReaction.js"></script>
+<script>
+  // Get username from localStorage (set at login)
+  const nickname = localStorage.getItem("chatUser") || "Anonymous";
+
+  // Function to send message
+  function sendMessage() {
+    const msgInput = document.getElementById("chatInput");
+    const msg = msgInput.value.trim();
+    if (!msg) return;
+
+    const chatBox = document.getElementById("chatBox");
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "message right"; // Sent message
+    msgDiv.innerHTML = `
+      <div class="msg-text">${msg}</div>
+      <div class="nickname">${nickname}</div>
+    `;
+    chatBox.appendChild(msgDiv);
+
+    // Add reactions
+    addReactions(msgDiv);
+
+    msgInput.value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // Add reaction icons dynamically
+  function addReactions(msgDiv) {
+    const reactionPanel = document.createElement("div");
+    reactionPanel.className = "reaction-panel";
+    reactionPanel.innerHTML = `
+      <span class="reaction">❤️</span>
+      <span class="reaction">😂</span>
+      <span class="reaction">👍</span>
+      <span class="reaction">😮</span>
+    `;
+
+    // Show/hide reaction panel on click
+    msgDiv.addEventListener("click", () => {
+      reactionPanel.style.display =
+        reactionPanel.style.display === "flex" ? "none" : "flex";
+    });
+
+    // When a reaction is clicked, show it under the message
+    reactionPanel.querySelectorAll(".reaction").forEach((emoji) => {
+      emoji.addEventListener("click", () => {
+        let existing = msgDiv.querySelector(".user-reaction");
+        if (!existing) {
+          existing = document.createElement("div");
+          existing.className = "user-reaction";
+          msgDiv.appendChild(existing);
+        }
+        existing.textContent = emoji.textContent;
+        reactionPanel.style.display = "none";
+      });
+    });
+
+    msgDiv.appendChild(reactionPanel);
+  }
+
+  // Automatically add reactions for received messages too
+  document.querySelectorAll(".message").forEach(addReactions);
+</script>
+
 </body>
 </html>
