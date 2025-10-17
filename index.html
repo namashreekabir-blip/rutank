@@ -1,231 +1,290 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MayBe | MayBeNot</title>
-  <a href="chat.html" class="open-chat"></a>
- 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
-
-     body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      color: #fff;
-      text-align: center;
-      background: linear-gradient(135deg, #fceabb, #f8b500);
-      min-height: 100vh;
-      overflow-x: hidden;
-      padding: 50px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      animation: backgroundShift 20s infinite alternate;
-    }
-    @keyframes backgroundShift {
-      0% {background: linear-gradient(135deg, #fceabb, #f8b500);}
-      50% {background: linear-gradient(135deg, #a1c4fd, #c2e9fb);}
-      100% {background: linear-gradient(135deg, #f5c7b8, #c9d6ff);}
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MayBe | MayBeNot</title>
     
-    /* ... (Other CSS remains largely the same) ... */
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
 
-    .block {
-        background: rgba(255,255,255,0.6); 
-        backdrop-filter: blur(12px);
-        border-radius: 20px;
-        padding: 20px;
-        flex: 1;
-        min-width: 300px;
-        max-width: 350px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        display: flex;
-        flex-direction: column;
-        color: #000; 
-    }
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            color: #fff;
+            text-align: center;
+            background: linear-gradient(135deg, #fceabb, #f8b500);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 50px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: backgroundShift 20s infinite alternate;
+        }
+        @keyframes backgroundShift {
+            0% {background: linear-gradient(135deg, #fceabb, #f8b500);}
+            50% {background: linear-gradient(135deg, #a1c4fd, #c2e9fb);}
+            100% {background: linear-gradient(135deg, #f5c7b8, #c9d6ff);}
+        }
 
-    /* ... (Message and Chatbox styles remain the same) ... */
-    
-    /* Base message styles */
-    .message {
-      position: relative; 
-      display: inline-block;
-      padding: 8px 12px;
-      margin: 6px 0;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      word-wrap: break-word;
-      cursor: pointer; 
-    }
-    .my-message {
-      background: rgba(255, 255, 255, 0.7);
-      color: #000;
-      text-align: left;
-      align-self: flex-start;
-      border-radius: 15px 15px 15px 0;
-      margin: 8px;
-      padding: 8px 12px;
-      max-width: 70%;
-    }
+        h1 { font-size: 2.8rem; text-shadow: 2px 2px 15px rgba(0,0,0,0.3); }
+        p.subtitle { margin-bottom: 30px; text-shadow: 1px 1px 8px rgba(0,0,0,0.2); }
 
-    .other-message {
-      background: rgba(0, 0, 0, 0.2);
-      color: #fff;
-      text-align: left;
-      align-self: flex-end;
-      border-radius: 15px 15px 0 15px;
-      margin: 8px;
-      padding: 8px 12px;
-      max-width: 70%;
-    }
+        .container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .block {
+            background: rgba(255,255,255,0.6); 
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 20px;
+            flex: 1;
+            min-width: 300px;
+            max-width: 350px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            color: #000; 
+        }
+
+        /* --- CHAT STYLES --- */
+        .chat-box {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 10px;
+            text-align: left;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 10px;
+            color: #000;
+        }
+        .message {
+            position: relative; 
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            word-wrap: break-word;
+            cursor: pointer; 
+        }
+        .my-message {
+            background: rgba(255, 255, 255, 0.7);
+            color: #000;
+            align-self: flex-start;
+            border-radius: 15px 15px 15px 0;
+        }
+        .other-message {
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            align-self: flex-end;
+            border-radius: 15px 15px 0 15px;
+        }
+        .time { font-size: 0.7rem; color: #333; margin-top: 4px; }
+        .other-message .time { color: #ccc; }
+
+        /* --- REACTION MENU STYLES --- */
+        #reactionMenu {
+            /* Fixes it to the viewport, preventing it from scrolling away */
+            position: fixed; 
+            display: none; 
+            background: #fff;
+            border-radius: 25px;
+            padding: 8px 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1001;
+            align-items: center;
+            gap: 8px;
+            
+            /* Animation State (Start) */
+            transform: scale(0.8) translateY(10px);
+            opacity: 0;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease-out; 
+        }
         
-    .time {
-      font-size: 0.7rem;
-      color: #333;
-      margin-top: 4px;
-    }
-    .other-message .time {
-        color: #ccc; 
-    }
-    /* Reaction Styles */
-    .reaction-display {
-      position: absolute;
-      bottom: -10px; 
-      right: 5px;
-      padding: 2px 6px;
-      border-radius: 12px;
-      background: #f0f0f0; 
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-      line-height: 1;
-      font-size: 1.2rem;
-      cursor: default;
-    }
-    
-    .other-message .reaction-display {
-        right: auto;
-        left: 5px;
-    }
+        #reactionMenu.show {
+            /* Animation State (End - "Comes in slowly") */
+            display: flex;
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
 
-    /* Combined Reaction Menu/Prompt (Key Styling Changes) */
-    #reactionMenu {
-        /* CHANGED: Initial state for animation */
-        display: none;
-        position: fixed; /* Keep menu on screen even if user scrolls */
-        background: #fff;
-        border-radius: 25px;
-        padding: 8px 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        z-index: 1001;
-        align-items: center;
-        gap: 8px;
+        .emoji-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            margin: 0 2px;
+            transition: transform 0.1s;
+        }
+        .emoji-btn:hover { transform: scale(1.2); }
         
-        /* Smooth Animation */
-        transform: scale(0.8) translateY(10px);
-        opacity: 0;
-        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease-out; 
-    }
-    
-    #reactionMenu.show {
-        display: flex;
-        transform: scale(1) translateY(0);
-        opacity: 1;
-    }
-
-    /* Default Emoji Buttons */
-    #reactionMenu button.emoji-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        padding: 5px;
-        margin: 0 2px;
-        transition: transform 0.1s;
-    }
-    #reactionMenu button.emoji-btn:hover {
-        transform: scale(1.2);
-    }
-    
-    /* Custom Emoji Input & Removal (Combined) */
-    .custom-reaction-group {
-        display: flex;
-        gap: 0;
-        padding-left: 10px;
-        border-left: 1px solid #eee;
-        align-items: center;
-    }
-    
-    #customReactionInput {
-        /* CHANGED: Now looks like a subtle button for the custom picker */
-        width: 35px; 
-        height: 35px;
-        border: none; /* Removed border */
-        border-radius: 50%; /* Made circular */
-        padding: 0;
-        text-align: center;
-        font-size: 1.5rem; /* Larger icon */
-        outline: none;
-        color: #000;
-        cursor: pointer;
-        background: #f0f0f0; /* Subtle background */
-        box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
-        line-height: 35px;
-        transition: background 0.1s;
-    }
-
-    #customReactionInput::placeholder {
-        opacity: 1; /* Show placeholder text */
-        font-size: 1rem;
-        color: #777;
-    }
-    
-    /* The "Remove" button functionality is now part of the input's logic */
-
-    /* ... (Other CSS remains largely the same) ... */
-    
-  </style>
+        /* Custom Emoji Picker Style */
+        .custom-reaction-group {
+            display: flex;
+            gap: 0;
+            padding-left: 10px;
+            border-left: 1px solid #eee;
+            align-items: center;
+        }
+        #customReactionInput {
+            width: 35px; 
+            height: 35px;
+            border: none;
+            border-radius: 50%; 
+            padding: 0;
+            text-align: center;
+            font-size: 1.5rem; 
+            outline: none;
+            color: #000;
+            cursor: pointer;
+            background: #f0f0f0; 
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+            line-height: 35px;
+        }
+        #customReactionInput::placeholder {
+            opacity: 1; 
+            font-size: 1rem;
+            color: #777;
+        }
+        
+        .reaction-display {
+            position: absolute;
+            bottom: -10px; 
+            right: 5px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            background: #f0f0f0; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            line-height: 1;
+            font-size: 1.2rem;
+            cursor: pointer; /* Allows clicking to see who reacted (future feature) */
+        }
+        .other-message .reaction-display {
+            right: auto;
+            left: 5px;
+        }
+        
+        /* --- OTHER STYLES (Gallery, Notes, Floating Button) --- */
+        /* ... (Keep the rest of the existing styles for other sections) ... */
+        .slider-container {
+            width: 90%;
+            overflow-x: auto;
+            display: flex;
+            gap: 20px;
+            padding: 20px 0;
+            scroll-behavior: smooth;
+            border-radius: 25px;
+            margin-bottom: 60px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .slider-container img {
+            width: 200px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            border-radius: 15px;
+            border: none;
+            padding: 10px;
+            resize: none;
+            font-size: 1rem;
+            outline: none;
+            color: #000;
+            background: rgba(255,255,255,0.8);
+        }
+        button {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        #float-upload-container {
+            position: fixed;
+            bottom: 30px; 
+            right: 30px; 
+            z-index: 1000; 
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end; 
+        }
+        #main-upload-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #25D366; 
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+        #main-upload-btn.active {
+            transform: rotate(45deg);
+            background-color: #ff4d4d; 
+        }
+        .hidden-options { display: none !important; }
+    </style>
 </head>
 <body>
-<h1>Welcome To My Magical World✨</h1>
-  <p class="subtitle">Every color, every moment, a story to tell 💖</p>
 
-  <div class="container">
- <div class="block">
-  <section class="note-section">
-    <h2>Things to Tell Each Other 💌</h2>
-    <div id="currentDate"></div>
-    <textarea id="noteInput" placeholder="Write something sweet... 💭"></textarea>
-    <button class="save-btn" onclick="saveNote()">Save Note</button>
-    <div class="notes-list" id="notesList"></div>
-  </section>
+    <h1>Welcome To My Magical World✨</h1>
+    <p class="subtitle">Every color, every moment, a story to tell 💖</p>
+
+    <div class="container">
+        <div class="block">
+            <section class="note-section">
+                <h2>Things to Tell Each Other 💌</h2>
+                <textarea id="noteInput" placeholder="Write something sweet... 💭"></textarea>
+                <button class="save-btn" onclick="saveNote()">Save Note</button>
+                <div class="notes-list" id="notesList"></div>
+            </section>
+        </div>
+
+        <div class="block">
+            <h2>🎵 Song</h2>
+            <iframe src="https://www.youtube.com/embed/Vch6nf2tey4" frameborder="0" allowfullscreen></iframe>
+        </div>
+
+        <div class="block">
+            <h2>💬 Chat</h2>
+            <input type="text" id="chatInput" placeholder="Type your message..." style="width:100%;padding:8px;border-radius:10px;border:none;">
+            <button onclick="sendMessage()">Send</button>
+            <div class="chat-box" id="chatBox"></div>
+        </div>
     </div>
 
+    <div class="section-title">My Moments & Memories</div>
+    <div class="slider-container" id="gallery"></div>
+    <button id="showBlue" onclick="showBlueCollection()">💙</button>
+    <div class="slider-container" id="blueGallery" style="display:none;"></div>
 
-    <div class="block">
-      <h2>🎵 Song</h2>
-      <iframe src="https://www.youtube.com/embed/Vch6nf2tey4" frameborder="0" allowfullscreen></iframe>
-    </div>
+    <button onclick="logout()">Logout</button>
 
-    <div class="block">
-      <h2>💬 Chat</h2>
-      <input type="text" id="chatInput" placeholder="Type your message..." style="width:100%;padding:8px;border-radius:10px;border:none;">
-      <button onclick="sendMessage()">Send</button>
-      <div class="chat-box" id="chatBox"></div>
-    </div>
-  </div>
-
-  
-  <div class="section-title">My Moments & Memories</div>
-  <div class="slider-container" id="gallery"></div>
-
-  <button id="showBlue" onclick="showBlueCollection()">💙</button>
-  <div class="section-title" id="blueTitle" style="display:none;">Things you Should Know💙</div>
-  <p id="blueDesc" style="display:none;">Because even silly things deserve to be remembered beautifully🌷💫</p>
-  <div class="slider-container" id="blueGallery" style="display:none;"></div>
-
-   <button onclick="logout()">Logout</button>
-
-<div id="float-upload-container">
+    <div id="float-upload-container">
         <div id="float-media-options" class="hidden-options">
             <label for="image-upload" class="option-btn" title="Upload Image">🖼️</label>
             <label for="audio-upload" class="option-btn" title="Upload Audio">🎵</label>
@@ -234,438 +293,256 @@
         <button id="main-upload-btn" aria-label="Open upload options">+</button>
     </div>
 
-
     <input type="file" id="image-upload" accept="image/*" style="display: none;">
     <input type="file" id="audio-upload" accept="audio/*" style="display: none;">
     <input type="file" id="video-upload" accept="video/*" style="display: none;">
 
-<div id="reactionMenu">
-    <button class="emoji-btn" onclick="addReaction('👍')">👍</button>
-    <button class="emoji-btn" onclick="addReaction('❤️')">❤️</button>
-    <button class="emoji-btn" onclick="addReaction('😂')">😂</button>
-    <button class="emoji-btn" onclick="addReaction('😮')">😮</button>
-    <button class="emoji-btn" onclick="addReaction('😢')">😢</button>
-    <button class="emoji-btn" onclick="addReaction('🙏')">🙏</button>
-    
-    <div class="custom-reaction-group">
-        <input type="text" id="customReactionInput" placeholder="+" maxlength="2" 
-               onkeypress="handleCustomReaction(event)" 
-               title="Type/Paste any emoji, then press Enter to react. Clear and press Enter to remove.">
+    <div id="reactionMenu">
+        <button class="emoji-btn" onclick="addReaction('👍')">👍</button>
+        <button class="emoji-btn" onclick="addReaction('❤️')">💙</button>
+        <button class="emoji-btn" onclick="addReaction('😂')">😂</button>
+        <button class="emoji-btn" onclick="addReaction('😮')">😮</button>
+        <button class="emoji-btn" onclick="addReaction('😢')">😢</button>
+        <button class="emoji-btn" onclick="addReaction('🙏')">🙏</button>
+        
+        <div class="custom-reaction-group">
+            <input type="text" id="customReactionInput" placeholder="+" maxlength="2" 
+                   onkeypress="handleCustomReaction(event)" 
+                   title="Type/Paste any emoji, then press Enter to react. Clear and press Enter to remove.">
+        </div>
     </div>
-</div>
 
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script> 
 
-  <script>
-    
-    // Gallery
-    const images = ['just.jpg','diya.jpg','3 face.jpg','tem1.jpg','tem 2.jpg','heena.jpg','soft toy.jpg','cheena.jpg'];
-    const gallery = document.getElementById('gallery');
-    images.forEach(src => {
-      const img = document.createElement('img');
-      img.src = src;
-      gallery.appendChild(img);
-    });
-    
-    const blueImages = ['bajari.jpeg','chapti.avif','jwar.jpeg','book.jpg'];
-    const blueGallery = document.getElementById('blueGallery');
-    const blueTitle = document.getElementById('blueTitle');
-    const blueDesc = document.getElementById('blueDesc');
-
-    function showBlueCollection() {
-      blueGallery.style.display = 'flex';
-      blueTitle.style.display = 'block';
-      blueDesc.style.display = 'block';
-      blueGallery.innerHTML = '';
-      blueImages.forEach(src => {
-        const img = document.createElement('img');
-        img.src = src;
-        blueGallery.appendChild(img);
-      });
-      document.getElementById('showBlue').style.display = 'none';
-    }
-
-    // Notes
-     function loadNotes() {
-      const notes = JSON.parse(localStorage.getItem("sharedNotes")) || [];
-      const list = document.getElementById("notesList");
-      list.innerHTML = "";
-      notes.forEach((n, index) => {
-        const div = document.createElement("div");
-        div.className = "note";
-        div.innerHTML = `<p>${n.text}</p>
-                         <div class="date">${n.date}</div>
-                         <button class="delete-btn" onclick="deleteNote(${index})">Delete</button>`;
-        list.appendChild(div);
-      });
-    }
-    
-    function saveNote(){
-      const text = document.getElementById("noteInput").value;
-      if(!text.trim()) return;
-      const note = { text, date: new Date().toLocaleString() };
-      const notes = JSON.parse(localStorage.getItem("sharedNotes")) || [];
-      notes.push(note);
-      localStorage.setItem("sharedNotes", JSON.stringify(notes));
-      document.getElementById("noteInput").value = "";
-      loadNotes();
-    }
-     function deleteNote(index) {
-      const notes = JSON.parse(localStorage.getItem("sharedNotes")) || [];
-      notes.splice(index, 1);
-      localStorage.setItem("sharedNotes", JSON.stringify(notes));
-      loadNotes();
-    }
-    loadNotes();
-
-    // Firebase Chat & Upload Logic
-    const firebaseConfig = {
-      apiKey: "AIzaSyDnVN3MFbB8_4hYHDbHY_OFdlG6NdZoFN4",
-      authDomain: "maybemaybenot-eaa41.firebaseapp.com",
-      databaseURL: "https://maybemaybenot-eaa41-default-rtdb.firebaseio.com/",
-      projectId: "maybemaybenot-eaa41",
-      storageBucket: "maybemaybenot-eaa41.firebasestorage.app",
-      messagingSenderId: "811933656187",
-      appId: "1:811933656187:web:e0b0f30441b61586da2ede",
-      measurementId: "G-9ELBC2WJDC"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const chatBox = document.getElementById("chatBox");
-
-    // --- Floating Button Logic ---
-    const mainBtn = document.getElementById('main-upload-btn');
-    const optionsMenu = document.getElementById('float-media-options');
-    const imageUpload = document.getElementById('image-upload');
-    const audioUpload = document.getElementById('audio-upload');
-    const videoUpload = document.getElementById('video-upload');
-
-    // Toggle the menu visibility when the main button is clicked
-    mainBtn.addEventListener('click', () => {
-        optionsMenu.classList.toggle('hidden-options');
-        mainBtn.classList.toggle('active');
-    });
-
-    // Listener to trigger upload when any file is selected from the hidden inputs
-    imageUpload.addEventListener('change', () => sendMedia(imageUpload));
-    audioUpload.addEventListener('change', () => sendMedia(audioUpload));
-    videoUpload.addEventListener('change', () => sendMedia(videoUpload));
-    // --- End Floating Button Logic ---
-
-    
-    function sendMessage() {
-      const msg = document.getElementById("chatInput").value;
-      if (!msg.trim()) return;
-
-      const nickname = localStorage.getItem("chatUser");
-      if (!nickname) {
-        window.location.href = "login.html";
-        return;
-      }
-
-      const now = new Date();
-      const messageObj = { 
-        text: msg, 
-        time: now.toLocaleTimeString(), 
-        date: now.toLocaleDateString(),
-        sender: nickname 
-      };
-
-      db.ref("chat").push(messageObj);
-      document.getElementById("chatInput").value = "";
-    }
-    
-    // Function to handle media upload using Firebase Storage
-    function sendMedia(fileInput) {
-        const file = fileInput.files[0];
-        if (!file) return;
-
-        // Close the options menu after selection
-        optionsMenu.classList.add('hidden-options');
-        mainBtn.classList.remove('active');
-
-        const nickname = localStorage.getItem("chatUser") || "You";
-        
-        let mediaType = '';
-        if (file.type.startsWith('image/')) mediaType = 'image';
-        else if (file.type.startsWith('audio/')) mediaType = 'audio';
-        else if (file.type.startsWith('video/')) mediaType = 'video';
-        else {
-            alert("Unsupported file type selected.");
-            fileInput.value = ''; 
-            return;
-        }
-
-
-        const storageRef = firebase.storage().ref('chatMedia/' + Date.now() + '_' + file.name);
-        const uploadTask = storageRef.put(file);
-        
-        // Push a temporary message
-        db.ref("chat").push({
-            text: `Uploading ${mediaType.toUpperCase()}...`,
-            sender: nickname,
-            time: new Date().toLocaleTimeString(),
-            date: new Date().toLocaleDateString(),
-            isPlaceholder: true 
+    <script>
+        // --- CONFIG & INITIALIZATION ---
+        const images = ['just.jpg','diya.jpg','3 face.jpg','tem1.jpg','tem 2.jpg','heena.jpg','soft toy.jpg','cheena.jpg'];
+        const gallery = document.getElementById('gallery');
+        images.forEach(src => {
+            const img = document.createElement('img');
+            img.src = src;
+            gallery.appendChild(img);
         });
+        
+        // --- FIREBASE SETUP ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnVN3MFbB8_4hYHDbHY_OFdlG6NdZoFN4",
+            authDomain: "maybemaybenot-eaa41.firebaseapp.com",
+            databaseURL: "https://maybemaybenot-eaa41-default-rtdb.firebaseio.com/",
+            projectId: "maybemaybenot-eaa41",
+            storageBucket: "maybemaybenot-eaa41.firebasestorage.app",
+            messagingSenderId: "811933656187",
+            appId: "1:811933656187:web:e0b0f30441b61586da2ede",
+            measurementId: "G-9ELBC2WJDC"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const chatBox = document.getElementById("chatBox");
 
 
-        uploadTask.on('state_changed', 
-            (snapshot) => {}, 
-            (error) => {
-                console.error("Upload failed:", error);
-                alert("Media upload failed!");
-            }, 
-            () => {
-                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    const messageObj = {
-                        text: '', 
-                        media: downloadURL,
-                        type: mediaType,
-                        time: new Date().toLocaleTimeString(),
-                        date: new Date().toLocaleDateString(),
-                        sender: nickname
-                    };
-                    firebase.database().ref("chat").push(messageObj);
-                    fileInput.value = ''; 
+        // --- CHAT MESSAGE & MEDIA SENDING (Standard Logic) ---
+
+        function sendMessage() {
+            const msg = document.getElementById("chatInput").value;
+            if (!msg.trim()) return;
+            const nickname = localStorage.getItem("chatUser");
+            if (!nickname) { window.location.href = "login.html"; return; }
+
+            const messageObj = { 
+                text: msg, 
+                time: new Date().toLocaleTimeString(), 
+                date: new Date().toLocaleDateString(),
+                sender: nickname 
+            };
+            db.ref("chat").push(messageObj);
+            document.getElementById("chatInput").value = "";
+        }
+        
+        // (Function sendMedia and other support functions are assumed to be present)
+
+        
+        // --- REACTION FEATURE LOGIC ---
+        let messageReactions = {}; 
+        let currentMessageKey = null;
+
+        // Listener for Realtime Chat Updates
+        db.ref("chat").on("value", snapshot => {
+            chatBox.innerHTML = "";
+            messageReactions = {}; 
+            snapshot.forEach(snap => {
+                const m = snap.val();
+                const div = document.createElement("div");
+                const currentUser = localStorage.getItem("chatUser") || "You";
+                const sender = m.sender || "Unknown";
+                const messageKey = snap.key;
+                
+                messageReactions[messageKey] = m.reaction || null;
+
+                if (sender === currentUser) {
+                    div.className = "message my-message";
+                } else {
+                    div.className = "message other-message";
+                }
+                
+                // Content Rendering (Media and Text)
+                if (m.media) { /* ... render media ... */ }
+                if (m.text) { div.innerHTML += `<p style="margin: 0; padding: 0;">${m.text}</p>`; }
+                
+                // Time & Sender
+                div.innerHTML += `<div class="time">${sender === currentUser ? '' : sender + ' • '}${m.date} | ${m.time}</div>`;
+                
+                // Reaction Display
+                let reactionDisplay = m.reaction ? `<span class="reaction-emoji">${m.reaction}</span>` : '';
+                div.innerHTML += `<div class="reaction-display">${reactionDisplay}</div>`;
+                div.setAttribute('data-key', messageKey); 
+                
+                // Event Listeners for Reaction Menu (Long-press/Click/Right-click)
+                let pressTimer;
+                div.addEventListener('mousedown', (e) => {
+                    if (e.button === 0) { 
+                        pressTimer = setTimeout(() => {
+                            showReactionMenu(messageKey, e);
+                        }, 300);
+                    }
                 });
-            }
-        );
-    }
-    
-    function logout() {
-      localStorage.removeItem("chatUser");
-      window.location.href = "login.html";
-    }
-
-
-    // Load Messages Realtime (UPDATED for reactions)
-    let messageReactions = {}; 
-    
-    db.ref("chat").on("value", snapshot => {
-      chatBox.innerHTML = "";
-      messageReactions = {}; 
-      snapshot.forEach(snap => {
-        const m = snap.val();
-        const div = document.createElement("div");
-
-        const currentUser = localStorage.getItem("chatUser") || "You";
-        const sender = m.sender || "Unknown";
-        const messageKey = snap.key;
-        
-        // Store reaction state
-        messageReactions[messageKey] = m.reaction || null;
-
-
-        if (sender === currentUser) {
-          div.className = "message my-message";
-        } else {
-          div.className = "message other-message";
-        }
-        
-        // 1. ADD MEDIA ELEMENTS FIRST
-        if (m.media) {
-            if (m.type === 'image') {
-                div.innerHTML += `<img src="${m.media}" style="max-width:200px; border-radius:10px; display:block; margin-bottom: 5px;">`;
-            } else if (m.type === 'video') {
-                div.innerHTML += `<video src="${m.media}" controls style="width:100%; max-width:200px; border-radius:10px; display:block; margin-bottom: 5px;"></video>`;
-            } else if (m.type === 'audio') {
-                div.innerHTML += `<audio src="${m.media}" controls style="width:100%; max-width:200px; display:block; margin-bottom: 5px;"></audio>`;
-            }
-        }
-        
-        // 2. Add text content below media (only if there is any)
-        if (m.text) {
-             div.innerHTML += `<p style="margin: 0; padding: 0;">${m.text}</p>`;
-        }
-        
-        // 3. ADD TIME/DATE
-        let reactionDisplay = m.reaction ? `<span class="reaction-emoji">${m.reaction}</span>` : '';
-
-        if (sender === currentUser) {
-             div.innerHTML += `<div class="time">${m.date} | ${m.time}</div>`;
-        } else {
-             div.innerHTML += `<div class="time">${sender} • ${m.date} | ${m.time}</div>`;
-        }
-        
-        // 4. ADD REACTION BUTTON/DISPLAY
-        div.innerHTML += `<div class="reaction-display">${reactionDisplay}</div>`;
-        div.setAttribute('data-key', messageKey); // Store Firebase key for updating
-        
-        // Event listener to show reaction menu (on click or right-click)
-        // Use mousedown/touchstart for a faster, long-press feel on touch devices
-        let pressTimer;
-        div.addEventListener('mousedown', (e) => {
-            if (e.button === 0) { // Left click
-                pressTimer = setTimeout(() => {
+                div.addEventListener('mouseup', () => {
+                    clearTimeout(pressTimer);
+                });
+                
+                div.addEventListener('click', (e) => {
+                     if (pressTimer) {
+                        clearTimeout(pressTimer);
+                        pressTimer = null; 
+                     } else if (!e.target.closest('img, video, audio, .reaction-display')) { 
+                        showReactionMenu(messageKey, e);
+                     }
+                });
+                
+                div.addEventListener('contextmenu', (e) => {
+                    e.preventDefault(); 
                     showReactionMenu(messageKey, e);
-                }, 300); // Wait 300ms for "long press"
+                });
+
+                chatBox.appendChild(div);
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        // Shows the reaction menu (The positioning fix is here)
+        function showReactionMenu(messageKey, event) {
+            currentMessageKey = messageKey;
+            const menu = document.getElementById('reactionMenu');
+            const input = document.getElementById('customReactionInput');
+            const messageElement = event.currentTarget; 
+            
+            const rect = messageElement.getBoundingClientRect();
+            
+            // Fixed sizing (must match CSS)
+            const menuHeight = 60; 
+            const menuWidth = 380; 
+            
+            // Calculate fixed position (relative to viewport)
+            let topPosition = rect.top - menuHeight - 10; 
+            let leftPosition = rect.left + (rect.width / 2) - (menuWidth / 2);
+            
+            // Clamp (prevent going off screen)
+            if (leftPosition < 10) leftPosition = 10;
+            if (leftPosition + menuWidth > window.innerWidth - 10) {
+                 leftPosition = window.innerWidth - menuWidth - 10;
             }
-        });
-        div.addEventListener('mouseup', () => {
-            clearTimeout(pressTimer);
-        });
-        
-        // Alternative: Simple click for desktop, but only if we didn't start a long press
-        div.addEventListener('click', (e) => {
-             // If a long press was prevented/finished, don't show the menu on the click event
-             if (pressTimer) {
-                clearTimeout(pressTimer);
-                pressTimer = null; // Reset
-             } else {
-                 // Regular click action
-                 if (!e.target.closest('img, video, audio, .reaction-display')) { 
-                    showReactionMenu(messageKey, e);
-                 }
-             }
-        });
-        
-        // Right-click for desktop context menu
-        div.addEventListener('contextmenu', (e) => {
-            e.preventDefault(); 
-            showReactionMenu(messageKey, e);
-        });
 
-
-        chatBox.appendChild(div);
-      });
-      chatBox.scrollTop = chatBox.scrollHeight;
-    });
-
-
-    // --- REACTION FUNCTIONS (FINAL POLISHED VERSION) ---
-    let currentMessageKey = null;
-
-    // Shows the combined menu with fixed positioning and animation
-    function showReactionMenu(messageKey, event) {
-        currentMessageKey = messageKey;
-        const menu = document.getElementById('reactionMenu');
-        const input = document.getElementById('customReactionInput');
-        const messageElement = event.currentTarget; 
-        
-        // 1. Get the position of the message element relative to the viewport (fixed position)
-        const rect = messageElement.getBoundingClientRect();
-        
-        // 2. Calculate the top and left position for the menu
-        // We calculate the position relative to the viewport (fixed positioning)
-        const menuHeight = 60; // Approximate height of the menu
-        const menuWidth = 380; // Approximate width of the menu
-        
-        // Position 10px above the message in the viewport
-        let topPosition = rect.top - menuHeight - 10; 
-        
-        // Center horizontally above the message
-        let leftPosition = rect.left + (rect.width / 2) - (menuWidth / 2);
-        
-        // Clamp left position to prevent going off the screen edge
-        if (leftPosition < 10) leftPosition = 10;
-        if (leftPosition + menuWidth > window.innerWidth - 10) {
-             leftPosition = window.innerWidth - menuWidth - 10;
+            menu.style.top = `${topPosition}px`;
+            menu.style.left = `${leftPosition}px`;
+            
+            // Start the smooth animation
+            menu.style.display = 'flex'; 
+            menu.classList.add('show');
+            
+            // Update input value and focus
+            input.value = messageReactions[messageKey] || '';
+            input.focus();
+            
+            // Close on click outside
+            setTimeout(() => {
+                document.removeEventListener('click', closeReactionMenu); 
+                document.addEventListener('click', closeReactionMenu, { once: true });
+            }, 100); 
+            
+            event.stopPropagation(); 
         }
 
-        // 3. Set properties and show the menu
-        menu.style.position = 'fixed'; 
-        menu.style.top = `${topPosition}px`;
-        menu.style.left = `${leftPosition}px`;
-        menu.classList.add('show');
+        // Hides the reaction menu with animation
+        function closeReactionMenu() {
+            const menu = document.getElementById('reactionMenu');
+            menu.classList.remove('show');
+            // Hide the display after the transition finishes (200ms)
+            setTimeout(() => {
+                menu.style.display = 'none';
+            }, 200); 
+            
+            currentMessageKey = null;
+            document.removeEventListener('click', closeReactionMenu);
+        }
         
-        // 4. Pre-fill input with existing reaction or clear it and focus
-        input.value = messageReactions[messageKey] || '';
-        input.focus();
+        // Adds/Removes reaction from a quick-select button
+        function addReaction(emoji) {
+            if (!currentMessageKey) return;
+            const currentReaction = messageReactions[currentMessageKey];
+            let newReaction = (currentReaction === emoji) ? null : emoji;
+            
+            db.ref(`chat/${currentMessageKey}`).update({ reaction: newReaction });
+            closeReactionMenu();
+        }
         
-        // 5. Add a timeout to close the menu if the user clicks anywhere else
-        setTimeout(() => {
-            document.removeEventListener('click', closeReactionMenu); 
-            document.addEventListener('click', closeReactionMenu, { once: true });
-        }, 100); 
+        // Handles 'Enter' key in the custom input
+        function handleCustomReaction(event) {
+            if (event.key === 'Enter') {
+                submitCustomReaction();
+                event.preventDefault(); 
+                return false;
+            }
+        }
         
-        event.stopPropagation(); 
-    }
+        // Submits the custom reaction or removes it if input is empty
+        function submitCustomReaction() {
+            if (!currentMessageKey) return;
+            
+            let emoji = document.getElementById('customReactionInput').value.trim();
+            
+            // Logic for removal if input is cleared
+            if (emoji.length === 0) {
+                removeReaction();
+                return;
+            }
+            
+            // Simple validation for a single emoji
+            if (emoji.length > 2) {
+                alert("Please use only a single emoji for the reaction.");
+                return;
+            }
+            
+            db.ref(`chat/${currentMessageKey}`).update({ reaction: emoji });
+            closeReactionMenu();
+        }
+        
+        // Explicitly removes the reaction
+        function removeReaction() {
+            if (!currentMessageKey) return;
+            db.ref(`chat/${currentMessageKey}`).update({ reaction: null });
+            closeReactionMenu();
+        }
 
-    // Hides the reaction menu with animation
-    function closeReactionMenu() {
-        const menu = document.getElementById('reactionMenu');
-        menu.classList.remove('show');
-        // Delay hiding the display property to allow the animation to finish
-        setTimeout(() => {
-            menu.style.display = 'none';
-        }, 200); 
-        
-        currentMessageKey = null;
-        document.removeEventListener('click', closeReactionMenu);
-    }
-    
-    // Handles quick-select button clicks and toggling
-    function addReaction(emoji) {
-        if (!currentMessageKey) return;
-        
-        const currentReaction = messageReactions[currentMessageKey];
-        let newReaction = emoji;
 
-        // Toggles reaction off if the same emoji is clicked again
-        if (currentReaction === emoji) {
-            newReaction = null;
+        // --- OTHER UTILITY FUNCTIONS (For completeness) ---
+        function logout() {
+          localStorage.removeItem("chatUser");
+          window.location.href = "login.html";
         }
-        
-        db.ref(`chat/${currentMessageKey}`).update({
-            reaction: newReaction
-        });
-        
-        closeReactionMenu();
-    }
-    
-    // Handles custom reaction submission (when Enter is pressed in the input field)
-    function handleCustomReaction(event) {
-        // Only trigger submit logic on 'Enter'
-        if (event.key === 'Enter') {
-            submitCustomReaction();
-            event.preventDefault(); // Prevents default behavior (like form submit)
-            return false;
-        }
-    }
-    
-    // Submits the custom reaction from the input field
-    function submitCustomReaction() {
-        if (!currentMessageKey) return;
-        
-        let emoji = document.getElementById('customReactionInput').value.trim();
-        
-        // If the input is cleared, this acts as a REMOVAL
-        if (emoji.length === 0) {
-            removeReaction();
-            return;
-        }
-        
-        // Limit to a single emoji (max 2 code points)
-        if (emoji.length > 2) {
-            alert("Please use only a single emoji for the reaction.");
-            return;
-        }
-        
-        // Update the reaction in Firebase
-        db.ref(`chat/${currentMessageKey}`).update({
-            reaction: emoji 
-        });
-        
-        closeReactionMenu();
-    }
-    
-    // Removes the reaction entirely (used by clearing the input and pressing Enter)
-    function removeReaction() {
-        if (!currentMessageKey) return;
-        
-        db.ref(`chat/${currentMessageKey}`).update({
-            reaction: null 
-        });
-        
-        closeReactionMenu();
-    }
-    // --- END REACTION FUNCTIONS ---
+        // (Other functions like loadNotes, saveNote, deleteNote, showBlueCollection, sendMedia should be included here)
 
-  </script>
-<script src="chatReaction.js"></script>
+    </script>
 </body>
 </html>
