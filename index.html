@@ -95,19 +95,19 @@
       box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     }
 
- .block {
-    background: rgba(255,255,255,0.6); /* semi-transparent white */
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    padding: 20px;
-    flex: 1;
-    min-width: 300px;
-    max-width: 350px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    color: #000; /* black text inside blocks */
-}
+    .block {
+        background: rgba(255,255,255,0.6); /* semi-transparent white */
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        padding: 20px;
+        flex: 1;
+        min-width: 300px;
+        max-width: 350px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        display: flex;
+        flex-direction: column;
+        color: #000; /* black text inside blocks */
+    }
 
     /* Notes */
     textarea {
@@ -195,14 +195,14 @@
     }
     /* Base message styles */
     .message {
-      position: relative; /* Important for reaction positioning */
+      position: relative; 
       display: inline-block;
       padding: 8px 12px;
       margin: 6px 0;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       word-wrap: break-word;
-      cursor: pointer; /* Indicate it's clickable for reactions */
+      cursor: pointer; 
     }
     .my-message {
       background: rgba(255, 255, 255, 0.7);
@@ -237,11 +237,11 @@
     /* Reaction Styles */
     .reaction-display {
       position: absolute;
-      bottom: -10px; /* Position below the message bubble */
+      bottom: -10px; 
       right: 5px;
       padding: 2px 6px;
       border-radius: 12px;
-      background: #f0f0f0; /* Light background for the reaction */
+      background: #f0f0f0; 
       box-shadow: 0 1px 3px rgba(0,0,0,0.3);
       line-height: 1;
       font-size: 1.2rem;
@@ -253,18 +253,21 @@
         left: 5px;
     }
 
-    /* Reaction Menu */
-    .reaction-menu {
-        position: fixed; /* Will be set to absolute by JS for correct scrolling */
+    /* Combined Reaction Menu/Prompt */
+    #reactionMenu {
+        position: absolute;
+        display: none;
         background: #fff;
         border-radius: 25px;
         padding: 8px 15px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         z-index: 1001;
-        display: none; /* Hidden by default */
-        transition: opacity 0.1s;
+        align-items: center;
+        gap: 8px;
     }
-    .reaction-menu button {
+    
+    /* Default Emoji Buttons */
+    #reactionMenu button.emoji-btn {
         background: none;
         border: none;
         font-size: 1.5rem;
@@ -273,9 +276,38 @@
         margin: 0 2px;
         transition: transform 0.1s;
     }
-    .reaction-menu button:hover {
+    #reactionMenu button.emoji-btn:hover {
         transform: scale(1.2);
     }
+    
+    /* Input/Custom Section */
+    .custom-reaction-group {
+        display: flex;
+        gap: 5px;
+        padding-left: 10px;
+        border-left: 1px solid #eee;
+    }
+    #customReactionInput {
+        width: 40px; 
+        height: 30px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 3px;
+        text-align: center;
+        font-size: 1.2rem;
+        outline: none;
+        color: #000;
+        cursor: pointer;
+    }
+    .remove-btn {
+        background: #ff4d4d !important;
+        color: white;
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        margin: 0 !important;
+        border-radius: 15px;
+    }
+
     /* End Reaction Styles */
 
 
@@ -333,7 +365,7 @@
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        background-color: #25D366; /* WhatsApp Green */
+        background-color: #25D366; 
         color: white;
         font-size: 30px;
         font-weight: bold;
@@ -442,11 +474,16 @@
     <input type="file" id="audio-upload" accept="audio/*" style="display: none;">
     <input type="file" id="video-upload" accept="video/*" style="display: none;">
 
-<div id="reactionMenu" class="reaction-menu">
-    <button onclick="addReaction('❤️')">❤️</button>
-    <button onclick="addReaction('😂')">😂</button>
-    <button onclick="addReaction('👍')">👍</button>
-    <button onclick="addReaction('😢')">😢</button>
+<div id="reactionMenu">
+    <button class="emoji-btn" onclick="addReaction('❤️')">❤️</button>
+    <button class="emoji-btn" onclick="addReaction('😂')">😂</button>
+    <button class="emoji-btn" onclick="addReaction('👍')">👍</button>
+    <button class="emoji-btn" onclick="addReaction('😢')">😢</button>
+    
+    <div class="custom-reaction-group">
+        <input type="text" id="customReactionInput" placeholder="✨" maxlength="2" onkeypress="handleCustomReaction(event)">
+        <button class="remove-btn" onclick="removeReaction()">Remove</button>
+    </div>
 </div>
 
 
@@ -637,15 +674,23 @@
     }
 
 
-    // Load Messages Realtime (UPDATED to handle media and reactions)
+    // Load Messages Realtime (UPDATED for reactions)
+    let messageReactions = {}; 
+    
     db.ref("chat").on("value", snapshot => {
       chatBox.innerHTML = "";
+      messageReactions = {}; 
       snapshot.forEach(snap => {
         const m = snap.val();
         const div = document.createElement("div");
 
         const currentUser = localStorage.getItem("chatUser") || "You";
         const sender = m.sender || "Unknown";
+        const messageKey = snap.key;
+        
+        // Store reaction state
+        messageReactions[messageKey] = m.reaction || null;
+
 
         if (sender === currentUser) {
           div.className = "message my-message";
@@ -680,18 +725,18 @@
         
         // 4. ADD REACTION BUTTON/DISPLAY
         div.innerHTML += `<div class="reaction-display">${reactionDisplay}</div>`;
-        div.setAttribute('data-key', snap.key); // Store Firebase key for updating
+        div.setAttribute('data-key', messageKey); // Store Firebase key for updating
         
         // Event listener to show reaction menu (on click or right-click)
         div.addEventListener('contextmenu', (e) => {
             e.preventDefault(); // Prevent default right-click menu
-            showReactionMenu(snap.key, e);
+            showReactionMenu(messageKey, e);
         });
         
         div.addEventListener('click', (e) => {
-            // Check if it's not a link/media click, then show menu
-            if (!e.target.closest('img, video, audio')) { 
-                showReactionMenu(snap.key, e);
+            // Check if it's not a link/media click, then show prompt
+            if (!e.target.closest('img, video, audio, .reaction-display')) { 
+                showReactionMenu(messageKey, e);
             }
         });
 
@@ -701,39 +746,39 @@
     });
 
 
-    // --- REACTION FUNCTIONS ---
+    // --- REACTION FUNCTIONS (FINAL COMBINED VERSION) ---
     let currentMessageKey = null;
 
-    // Shows the reaction menu near the clicked message
+    // Shows the combined menu (quick select + input)
     function showReactionMenu(messageKey, event) {
         currentMessageKey = messageKey;
         const menu = document.getElementById('reactionMenu');
-        const messageElement = event.currentTarget; // The message div that was clicked
+        const input = document.getElementById('customReactionInput');
+        const messageElement = event.currentTarget; 
         
         // 1. Get the position of the message element relative to the viewport
         const rect = messageElement.getBoundingClientRect();
         
         // 2. Calculate the top and left position for the menu
-        // We want the menu to appear above the message, centered horizontally
         const menuTop = rect.top + window.scrollY - 60; // 60px above the message top edge
         const menuLeft = rect.left + window.scrollX + (rect.width / 2) - (menu.offsetWidth / 2);
         
         // 3. Set properties and show the menu
-        menu.style.position = 'absolute'; // Use absolute positioning for accurate placement on the page
+        menu.style.position = 'absolute'; 
         menu.style.top = `${menuTop}px`;
         menu.style.left = `${menuLeft}px`;
         menu.style.display = 'flex';
         
-        // 4. Ensure message is visible (smooth scroll up if needed)
-        // messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Removed for cleaner behavior
-
-        // Close menu if user clicks outside
+        // 4. Pre-fill input with existing reaction or clear it
+        input.value = messageReactions[messageKey] || '';
+        
+        // 5. Add a timeout to close the menu if the user clicks anywhere else
         setTimeout(() => {
             document.removeEventListener('click', closeReactionMenu); 
             document.addEventListener('click', closeReactionMenu, { once: true });
         }, 100); 
         
-        event.stopPropagation(); // Stop the event from propagating further
+        event.stopPropagation(); 
     }
 
     // Hides the reaction menu
@@ -743,13 +788,66 @@
         document.removeEventListener('click', closeReactionMenu);
     }
     
-    // Sends the chosen emoji to Firebase
+    // Handles quick-select button clicks
     function addReaction(emoji) {
         if (!currentMessageKey) return;
         
-        // Update the reaction for the specific message in Firebase
+        const currentReaction = messageReactions[currentMessageKey];
+        let newReaction = emoji;
+
+        // Toggles reaction off if the same emoji is clicked again
+        if (currentReaction === emoji) {
+            newReaction = null;
+        }
+        
+        // Update the reaction in Firebase
+        db.ref(`chat/${currentMessageKey}`).update({
+            reaction: newReaction
+        });
+        
+        closeReactionMenu();
+    }
+    
+    // Handles custom reaction submission (when Enter is pressed in the input field)
+    function handleCustomReaction(event) {
+        if (event.key === 'Enter') {
+            submitCustomReaction();
+            return false;
+        }
+    }
+    
+    // Submits the custom reaction from the input field
+    function submitCustomReaction() {
+        if (!currentMessageKey) return;
+        
+        let emoji = document.getElementById('customReactionInput').value.trim();
+        
+        // If the user clears the box and presses enter, treat it as removal
+        if (emoji.length === 0) {
+            removeReaction();
+            return;
+        }
+        
+        // Optional: Keep it limited to one or two characters (one emoji)
+        if (emoji.length > 2) {
+            alert("Please use only a single emoji for the reaction.");
+            return;
+        }
+        
+        // Update the reaction in Firebase
         db.ref(`chat/${currentMessageKey}`).update({
             reaction: emoji 
+        });
+        
+        closeReactionMenu();
+    }
+    
+    // Removes the reaction entirely
+    function removeReaction() {
+        if (!currentMessageKey) return;
+        
+        db.ref(`chat/${currentMessageKey}`).update({
+            reaction: null 
         });
         
         closeReactionMenu();
